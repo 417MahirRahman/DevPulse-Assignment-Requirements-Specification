@@ -2,60 +2,45 @@ import type { Request, Response } from "express";
 import { authService } from "./auth.service";
 
 const signup = async (req: Request, res: Response) => {
+
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    res
+      .status(400)
+      .json({
+        success: false,
+        message: "name, email, and password are required",
+      });
+    return;
+  }
+
   try {
-    const result = await authService.loginUserIntoDB(req.body);
-    const { refreshToken } = result;
-    res.cookie("refreshToken", refreshToken, {
-      secure: false,
-      httpOnly: true,
-      sameSite: "lax",
-    });
-    res.status(200).json({
+    const user = await authService.registerUser(req.body);
+
+    res.status(201).json({
       success: true,
-      message: "User login successfully!",
-      data: result,
+      message: "User registered successfully",
+      data: user,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-      error: error,
-    });
+  } catch (err: any) {
+    if (err.message === "EMAIL_IN_USE") {
+      res.status(409).json({ success: false, message: "Email already in use" });
+      return;
+    }
+    console.error(err);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
 const login = async (req: Request, res: Response) => {
   try {
     const result = await authService.loginUserIntoDB(req.body);
-    const { refreshToken } = result;
-    res.cookie("refreshToken", refreshToken, {
-      secure: false,
-      httpOnly: true,
-      sameSite: "lax",
-    });
+    console.log("result: ", { result });
     res.status(200).json({
       success: true,
       message: "User login successfully!",
-      data: result,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-      error: error,
-    });
-  }
-};
-
-const refreshToken = async (req: Request, res: Response) => {
-  try {
-    const result = await authService.generateFreshToken(
-      req.cookies.refreshToken,
-    );
-    res.status(200).json({
-      success: true,
-      message: "Acess token generated!",
-      data: result,
+      data: req.body,
     });
   } catch (error: any) {
     res.status(500).json({
@@ -69,5 +54,4 @@ const refreshToken = async (req: Request, res: Response) => {
 export const authController = {
   signup,
   login,
-  refreshToken,
 };

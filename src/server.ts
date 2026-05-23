@@ -1,18 +1,12 @@
-import express, { type Application, type Request, type Response } from "express";
+import app from "./app";
 import config from "./config";
 import { initDB } from "./database";
 
-const app : Application = express();
-const port = config.port;
+const main = () => {
+  initDB();
+  app.listen(config.port, () => {
+    console.log(`The app listening on port ${config.port}`);
+  });
+};
 
-app.use(express.json());
-
-initDB();
-
-app.get("/", (req : Request, res : Response) => {
-  res.send("Hello World!");
-});
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+main();

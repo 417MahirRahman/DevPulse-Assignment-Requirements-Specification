@@ -1,7 +1,39 @@
 import bcrypt from "bcryptjs";
 import { pool } from "./../../database/index";
-import jwt, { type JwtPayload } from "jsonwebtoken";
-import config from "../../config";
+
+export const registerUser = async (payload: {
+  name: string;
+  email: string;
+  password: string;
+  role?: string;
+}) => {
+  const { name, email, password } = payload;
+  const validRoles = ["contributor", "maintainer"];
+  const role =
+    payload.role && validRoles.includes(payload.role)
+      ? payload.role
+      : "contributor";
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  try {
+    const userInfo = await pool.query(
+      `
+      INSERT INTO users (name, email, password, role)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, name, email, role, created_at, updated_at
+    `,
+      [name, email, hashedPassword, role],
+    );
+    console.log("userInfo: ", userInfo.rows[0]);
+    return userInfo.rows[0];
+  } catch (err: any) {
+    if (err.code === "23505") {
+      throw new Error("EMAIL_IN_USE");
+    }
+
+    throw err;
+  }
+};
 
 const loginUserIntoDB = async (payload: {
   email: string;
@@ -25,68 +57,9 @@ const loginUserIntoDB = async (payload: {
     throw new Error("Invalid Credentials!");
   }
 
-  const jwtpayload = {
-    id: user.id,
-    name: user.name,
-    role: user.role,
-    is_active: user.is_active,
-    email: user.email,
-  };
-
-  const accessToken = jwt.sign(jwtpayload, config.secret as string, {
-    expiresIn: "1d",
-  });
-
-  const refreshToken = jwt.sign(jwtpayload, config.refresh_secret as string, {
-    expiresIn: "10d",
-  });
-
-  return { accessToken, refreshToken };
-};
-
-const generateFreshToken = async (token: string) => {
-  if (!token) {
-    throw new Error("Unauthorized");
-  }
-
-  const decoded = jwt.verify(
-    token as string,
-    config.refresh_secret as string,
-  ) as JwtPayload;
-
-  const userData = await pool.query(
-    `
-     SELECT * FROM users WHERE email=$1   
-        `,
-    [decoded.email],
-  );
-
-  const user = userData.rows[0];
-
-  if (userData.rows.length === 0) {
-    throw new Error("User not found!!");
-  }
-
-  if (!user?.is_active) {
-    throw new Error("Forbidden!!");
-  }
-
-  const jwtpayload = {
-    id: user.id,
-    name: user.name,
-    role: user.role,
-    is_active: user.is_active,
-    email: user.email,
-  };
-
-  const accessToken = jwt.sign(jwtpayload, config.secret as string, {
-    expiresIn: "1d",
-  });
-
-  return { accessToken };
 };
 
 export const authService = {
+  registerUser,
   loginUserIntoDB,
-  generateFreshToken,
 };
