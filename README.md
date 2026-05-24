@@ -45,7 +45,6 @@ A RESTful backend API for managing bug reports and feature requests, built with 
 ```bash
 # 1. Clone the repository
 git clone https://github.com/417MahirRahman/DevPulse-Assignment-Requirements-Specification.git
-cd devpulse-api
 
 # 2. Install dependencies
 npm install
@@ -61,6 +60,36 @@ npm run dev
 # Production
 npm start
 ```
+---
+
+## Database Schema
+
+### Table: `users`
+
+| Column | Type | Constraints |
+|---|---|---|
+| id | SERIAL | PRIMARY KEY |
+| name | TEXT | NOT NULL |
+| email | TEXT | NOT NULL, UNIQUE |
+| password | TEXT | NOT NULL |
+| role | TEXT | DEFAULT `contributor`, CHECK (`contributor` or `maintainer`) |
+| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+| updated_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+
+### Table: `issues`
+
+| Column | Type | Constraints |
+|---|---|---|
+| id | SERIAL | PRIMARY KEY |
+| title | VARCHAR(150) | NOT NULL |
+| description | TEXT | NOT NULL, min 20 characters |
+| type | TEXT | NOT NULL, CHECK (`bug` or `feature_request`) |
+| status | TEXT | DEFAULT `open`, CHECK (`open`, `in_progress`, `resolved`) |
+| reporter_id | INTEGER | NOT NULL |
+| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+| updated_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+
+---
 
 ---
 
@@ -91,33 +120,7 @@ npm start
 | type | `bug`, `feature_request` | none |
 | status | `open`, `in_progress`, `resolved` | none |
 
-
-## Database Schema
-
-### Table: `users`
-
-| Column | Type | Constraints |
-|---|---|---|
-| id | SERIAL | PRIMARY KEY |
-| name | TEXT | NOT NULL |
-| email | TEXT | NOT NULL, UNIQUE |
-| password | TEXT | NOT NULL |
-| role | TEXT | DEFAULT `contributor`, CHECK (`contributor` or `maintainer`) |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
-| updated_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
-
-### Table: `issues`
-
-| Column | Type | Constraints |
-|---|---|---|
-| id | SERIAL | PRIMARY KEY |
-| title | VARCHAR(150) | NOT NULL |
-| description | TEXT | NOT NULL, min 20 characters |
-| type | TEXT | NOT NULL, CHECK (`bug` or `feature_request`) |
-| status | TEXT | DEFAULT `open`, CHECK (`open`, `in_progress`, `resolved`) |
-| reporter_id | INTEGER | NOT NULL |
-| created_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
-| updated_at | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP |
+---
 
 ---
 
