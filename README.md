@@ -2,7 +2,7 @@
 
 A RESTful backend API for managing bug reports and feature requests, built with Node.js, TypeScript, Express, and NeonDB (PostgreSQL).
 
-**Live URL:** `[Live Server](https://dev-pulse-assignment-requirements-s.vercel.app/)`
+**Live URL:** [Live Server](https://dev-pulse-assignment-requirements-s.vercel.app/)
 
 ---
 
@@ -136,6 +136,11 @@ src/
 │   │   ├── auth.route.ts
 │   │   ├── auth.controller.ts
 │   │   └── auth.service.ts
+|   ├── users/
+│   |   ├── users.route.ts
+│   |   ├── users.controller.ts
+│   |   ├── users.service.ts
+│   |   └── users.interface.ts
 │   └── issue/
 │       ├── issue.route.ts
 │       ├── issue.controller.ts
