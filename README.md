@@ -2,7 +2,7 @@
 
 A RESTful backend API for managing bug reports and feature requests, built with Node.js, TypeScript, Express, and NeonDB (PostgreSQL).
 
-**Live URL:** `https://your-deployed-url.com`
+**Live URL:** `[Live Server](https://dev-pulse-assignment-requirements-s.vercel.app/)`
 
 ---
 
@@ -29,7 +29,6 @@ A RESTful backend API for managing bug reports and feature requests, built with 
 | Database | NeonDB (PostgreSQL) |
 | Auth | JSON Web Token (JWT) |
 | Password Hashing | bcryptjs |
-| DB Client | node-postgres (pg) |
 
 ---
 
@@ -91,8 +90,6 @@ npm start
 
 ---
 
----
-
 ## API Endpoints
 
 ### Authentication
@@ -119,8 +116,6 @@ npm start
 | sort | `newest`, `oldest` | `newest` |
 | type | `bug`, `feature_request` | none |
 | status | `open`, `in_progress`, `resolved` | none |
-
----
 
 ---
 
