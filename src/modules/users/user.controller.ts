@@ -3,14 +3,16 @@ import sendResponse from "../../utility/sendResponse";
 import { userService } from "./user.service";
 
 const createUser = async (req: Request, res: Response) => {
-
   try {
     const result = await userService.createUserIntoDB(req.body);
+
     sendResponse(res, {
       statusCode: 201,
       success: true,
       message: "User Created successfully!",
-      data: result.rows[0],
+
+      // ✅ FIXED
+      data: result,
     });
   } catch (error: any) {
     sendResponse(res, {

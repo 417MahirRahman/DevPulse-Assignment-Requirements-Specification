@@ -3,4 +3,11 @@ export interface IIssue {
   description: string;
   type: string;
   status: string;
+  reporter_id: number;
+}
+
+export interface QueryResult {
+  sort?: string;
+  type?: string;
+  status?: string;
 }
