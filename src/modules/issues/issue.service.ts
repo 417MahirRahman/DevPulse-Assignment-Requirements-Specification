@@ -1,6 +1,7 @@
 import { pool } from "../../database";
 import type { IIssue, QueryResult } from "./issue.interface";
 
+// CREATE ISSUE
 const createIssueIntoDB = async (payload: IIssue) => {
   const { title, description, type, status, reporter_id } = payload;
   const result = await pool.query(
@@ -15,35 +16,23 @@ const createIssueIntoDB = async (payload: IIssue) => {
   return result.rows[0];
 };
 
+// GET ALL ISSUES
 const getAllIssuesFromDB = async (query: QueryResult) => {
   const { sort, type, status } = query;
 
-  const conditions: string[] = [];
+  let whereClause = "";
   const values: string[] = [];
-  let paramIndex = 1;
 
   if (type) {
-    conditions.push(`type = $${paramIndex++}`);
+    whereClause = "WHERE type = $1";
     values.push(type);
-  }
-
-  if (status) {
-    conditions.push(`status = $${paramIndex++}`);
+  } else if (status) {
+    whereClause = "WHERE status = $1";
     values.push(status);
   }
-
-  let whereClause = "";
-
-  if (conditions.length > 0) {
-    whereClause = "WHERE " + conditions[0];
-
-    for (let i = 1; i < conditions.length; i++) {
-      whereClause += " AND " + conditions[i];
-    }
-  }
-
   const orderClause =
     sort === "oldest" ? "ORDER BY created_at ASC" : "ORDER BY created_at DESC";
+
 
   const issuesResult = await pool.query(
     `SELECT * FROM issues ${whereClause} ${orderClause}`,
@@ -52,34 +41,30 @@ const getAllIssuesFromDB = async (query: QueryResult) => {
 
   const issues = issuesResult.rows;
 
-  if (issues.length === 0) {
-    return [] as string[];
-  }
+  if (issues.length === 0) return [];
 
-  const reporterIds = [...new Set(issues.map((issue) => issue.reporter_id))];
+  const issuesWithReporter = [];
 
-  const reportersResult = await pool.query(
-    `SELECT id, name, email, role FROM users WHERE id = ANY($1)`,
-    [reporterIds],
-  );
+  for (let i = 0; i < issues.length; i++) {
+    const issue = issues[i];
 
-  const reporterMap: Record<number, any> = {};
-  for (const reporter of reportersResult.rows) {
-    reporterMap[reporter.id] = reporter;
-  }
+    const reporterResult = await pool.query(
+      `SELECT id, name, email, role FROM users WHERE id=$1`,
+      [issue.reporter_id],
+    );
 
-  const issuesWithReporter = issues.map((issue) => {
     const { reporter_id, ...issueWithoutReporterId } = issue;
 
-    return {
+    issuesWithReporter.push({
       ...issueWithoutReporterId,
-      reporter: reporterMap[reporter_id] || null, 
-    };
-  });
+      reporter: reporterResult.rows[0] || null,
+    });
+  }
 
   return issuesWithReporter;
 };
 
+// GET SINGLE ISSUE
 const getSingleIssueFromDB = async (id: string) => {
   const issueResult = await pool.query(`SELECT * FROM issues WHERE id=$1`, [
     id,
@@ -101,6 +86,7 @@ const getSingleIssueFromDB = async (id: string) => {
   return issueResult;
 };
 
+// UPDATE ISSUE
 const updateIssueFromDB = async (payload: IIssue, id: string) => {
   const { title, description, type, status } = payload;
 
@@ -120,6 +106,7 @@ const updateIssueFromDB = async (payload: IIssue, id: string) => {
   return result;
 };
 
+// DELETE ISSUE
 const deleteIssueFromDB = async (id: string) => {
   const result = await pool.query(
     `

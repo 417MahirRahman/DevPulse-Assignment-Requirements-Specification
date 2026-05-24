@@ -10,8 +10,6 @@ const createUser = async (req: Request, res: Response) => {
       statusCode: 201,
       success: true,
       message: "User Created successfully!",
-
-      // ✅ FIXED
       data: result,
     });
   } catch (error: any) {

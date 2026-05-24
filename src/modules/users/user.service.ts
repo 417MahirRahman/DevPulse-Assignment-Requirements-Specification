@@ -16,12 +16,10 @@ const createUserIntoDB = async (payload: IUser) => {
     [name, email, hashPassword, role],
   );
 
-  // ✅ FIXED
   if (result.rows.length > 0) {
     delete result.rows[0].password;
   }
 
-  // ✅ FIXED
   return result.rows[0];
 };
 

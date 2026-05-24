@@ -44,14 +44,12 @@ A RESTful backend API for managing bug reports and feature requests, built with 
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/your-username/devpulse-api.git
+git clone https://github.com/417MahirRahman/DevPulse-Assignment-Requirements-Specification.git
 cd devpulse-api
 
 # 2. Install dependencies
 npm install
 
-# 3. Create .env file
-cp .env.example .env
 ```
 
 ### Run the Server
@@ -93,35 +91,6 @@ npm start
 | type | `bug`, `feature_request` | none |
 | status | `open`, `in_progress`, `resolved` | none |
 
-
-### POST `/api/auth/signup`
-
-**Request Body:**
-```json
-{
-  "name": "John Doe",
-  "email": "john@devpulse.com",
-  "password": "securePassword123",
-  "role": "contributor"
-}
-```
-
-**Response (201):**
-```json
-{
-  "success": true,
-  "message": "User registered successfully",
-  "data": {
-    "id": 1,
-    "name": "John Doe",
-    "email": "john@devpulse.com",
-    "role": "contributor",
-    "created_at": "2026-01-20T09:00:00Z",
-    "updated_at": "2026-01-20T09:00:00Z"
-  }
-}
-```
----
 
 ## Database Schema
 
@@ -177,5 +146,4 @@ src/
 └── utility/
     └── sendResponse.ts
 ```
-
 ---

@@ -1,11 +1,13 @@
 import type { Request, Response } from "express";
 import { authService } from "./auth.service";
+import sendResponse from "../../utility/sendResponse";
 
 const signup = async (req: Request, res: Response) => {
   const { name, email, password } = req.body;
 
   if (!name || !email || !password) {
-    res.status(400).json({
+    sendResponse(res, {
+      statusCode: 400,
       success: false,
       message: "name, email, and password are required",
     });
@@ -15,7 +17,8 @@ const signup = async (req: Request, res: Response) => {
   try {
     const user = await authService.registerUser(req.body);
 
-    res.status(201).json({
+    sendResponse(res, {
+      statusCode: 201,
       success: true,
       message: "User registered successfully",
       data: user,
@@ -28,14 +31,15 @@ const signup = async (req: Request, res: Response) => {
 const login = async (req: Request, res: Response) => {
   try {
     const result = await authService.loginUser(req.body);
-
-    res.status(200).json({
+    sendResponse(res, {
+      statusCode: 200,
       success: true,
       message: "Login successful",
       data: result,
     });
   } catch (error: any) {
-    res.status(500).json({
+    sendResponse(res, {
+      statusCode: 500,
       success: false,
       message: error.message,
       error: error,
