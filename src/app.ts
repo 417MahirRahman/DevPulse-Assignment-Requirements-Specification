@@ -6,10 +6,12 @@ import express, {
 import {authRoute} from "./modules/auth/auth.route";
 import { userRoute } from "./modules/users/user.route";
 import { issueRoute } from "./modules/issues/issue.route";
+import cors from "cors";
 
 const app: Application = express();
 
 app.use(express.json());
+app.use(cors());
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Server is running...");
